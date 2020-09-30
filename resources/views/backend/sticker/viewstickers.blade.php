@@ -22,7 +22,7 @@
                     <div class="row">
                         @foreach($stickers as $sticker)
                         <div class="col-md-4">
-                            <div class="card" style="height:250px;">
+                            <div class="card" style="height:260px;">
                                 <button class="btn btn-sm btn-danger" onClick="deleteSticker({{$sticker->id}})" style="position: absolute; top: 10px; right: 10px;"><i class="fas fa-trash"></i></button>
                                 <button class="btn btn-sm btn-secondary" onClick="window.open('{{ route('admin.sticker.printsingle', $sticker->id) }}', 'targetWindow', 'toolbar=yes,location=no,status=no,menubar=no,scrollbars=no,resizable=no')" style="position: absolute; top: 10px; right: 45px;"><i class="fas fa-print"></i></button>
                                 <div class="card-body">
@@ -35,46 +35,42 @@
                                         <div class="body">
                                             <div class="serials">
                                                 <div class="row">
-                                                    <div class="col-md-6">
-                                                        <span class="label">SI: {{ $sticker['serialize'] }} </span>
+                                                    <div class="column">
+                                                        <span class="label">Serial Number: {{ $sticker['serialize'] }}</span>
                                                     </div>
-                                                    <div class="col-md-6">
-                                                        <span class="label">Serial Number: {{ $sticker['serial_number'] }}</span>
+                                                    <div class="column">
+                                                        <span class="label">Computer Type: {{ $sticker['sticker_type'] }}</span>
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-md-6">
+                                                    <div class="column">
                                                         <span class="label">Letter Number: {{ $letter->letter_number }}</span>
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="column">
                                                         <span class="label">Letter Date: {{ $letter->letter_date }}</span>
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-md-6">
-                                                        <span class="label">Computer Type: {{ $sticker['sticker_type'] }}</span>
-                                                    </div>
-                                                    <div class="col-md-6">
+                                                    <div class="column">
                                                         <span class="label">Unit Name: {{ $sticker['unit_name'] }}</span>
+                                                    </div>
+                                                    <div class="column">
+                                                        <span class="label">Person Name: {{ $sticker['person_name'] }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="column">
+                                                        <span class="label">Military Number: {{ $sticker['military_number'] }}</span>
+                                                    </div>
+                                                    <div class="column">
+                                                        <span class="label">Rank: {{ $sticker['rank'] }}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="units">
                                                 <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="row">
-                                                            <span class="label">Person Name: {{ $sticker['person_name'] }}</span>
-                                                        </div>
-                                                        <div class="row">
-                                                            <span class="label">Military Number: {{ $sticker['military_number'] }}</span>
-                                                        </div>
-                                                        <div class="row">
-                                                            <span class="label">Rank: {{ $sticker['rank'] }}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <img src="data:image/png;base64,{{DNS1D::getBarcodePNG($sticker['serialize'], 'C39',1,25)}}" alt="barcode" />
-                                                        {{-- <img src="{{ DNS2D::getBarcodePNGPath('4445645656', 'PDF417') }}" alt="barcode" /> --}}
+                                                    <div class="column">
+                                                        <img src="data:image/png;base64,{{DNS1D::getBarcodePNG($sticker['serialize'], 'C39',1.45,35,array(1,1,1), true)}}" alt="barcode" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -94,7 +90,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
 
-                    <form id="stickerForm" action="{{ route('admin.sticker.addsticker') }}" method="POST">
+                    <form id="stickerForm" action="{{ route('admin.sticker.addstickertoletter') }}" method="POST">
                         @csrf
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLabel">Add Sticker</h5>
@@ -165,8 +161,7 @@
 
                     </div>
                     <div class="modal-footer">
-                        <input type="hidden" name="letter_number" id="letter_number">
-                        <input type="hidden" name="letter_date" id="letter_date">
+                        <input type="hidden" name="letter_id" id="letter_id" value="{{$letter->id}}">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <input type="submit" value="Submit" class="btn btn-success" id="formSubmitBtn" />
                     </div>
@@ -199,13 +194,10 @@
         function calibrateSerialize() {
             let serialize = "";
             let type = $('#sticker_type').val();
-            let letterCount = $('#letterCount').val();
+            let serialized = '{{ $serialized[1] }}';
             let stickerCount = '{{ $stickers_count }}'
-            let letterNumber = '{{$letter->letter_number}}';
             let letterDate = $('#letterDate').val();
-            serialize = type + letterCount + letterNumber.toUpperCase() + stickerCount;
-            $('#letter_number').val(letterNumber.toUpperCase());
-            $('#letter_date').val(letterDate);
+            serialize = type + '-' + serialized + '-'+ stickerCount;
             $('#serialize').val(serialize);
         }
     </script>

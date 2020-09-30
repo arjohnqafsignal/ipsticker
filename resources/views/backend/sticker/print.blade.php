@@ -14,10 +14,10 @@
         <div class="serials">
             <div class="row">
                 <div class="column">
-                <span class="label">SI: {{ $sticker['serialize'] }} </span>
+                    <span class="label">Serial Number: {{ $sticker['serialize_number'] }}</span>
                 </div>
                 <div class="column">
-                    <span class="label">Serial Number: {{ $sticker['serialize_number'] }}</span>
+                    <span class="label">Computer Type: {{ $sticker['sticker_type'] }}</span>
                 </div>
             </div>
             <div class="row">
@@ -30,29 +30,25 @@
             </div>
             <div class="row">
                 <div class="column">
-                    <span class="label">Computer Type: {{ $sticker['sticker_type'] }}</span>
+                    <span class="label">Unit Name: {{ $sticker['unit_name'] }}</span>
                 </div>
                 <div class="column">
-                    <span class="label">Unit Name: {{ $sticker['unit_name'] }}</span>
+                    <span class="label">Person Name: {{ $sticker['person_name'] }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <span class="label">Military Number: {{ $sticker['military_number'] }}</span>
+                </div>
+                <div class="column">
+                    <span class="label">Rank: {{ $sticker['rank'] }}</span>
                 </div>
             </div>
         </div>
         <div class="units">
             <div class="row">
                 <div class="column">
-                    <div class="row">
-                        <span class="label">Person Name: {{ $sticker['person_name'] }}</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Military Number: {{ $sticker['military_number'] }}</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Rank: {{ $sticker['rank'] }}</span>
-                    </div>
-                </div>
-                <div class="column">
-                    <img src="data:image/png;base64,{{DNS1D::getBarcodePNG($sticker['serialize'], 'C39',1,25)}}" alt="barcode" />
-                    {{-- <img src="{{ DNS2D::getBarcodePNGPath('4445645656', 'PDF417') }}" alt="barcode" /> --}}
+                    <img src="data:image/png;base64,{{DNS1D::getBarcodePNG($sticker['serialize'], 'C39',1,35,array(1,1,1), true)}}" alt="barcode" style="margin-left: 50px;" />
                 </div>
             </div>
         </div>

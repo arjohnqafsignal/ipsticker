@@ -15,16 +15,29 @@ class StickerController extends Controller
         return $dataTable->render('backend.sticker.index');
     }
 
+    public function uploadscan(Request $request)
+    {
+        $request->validate([
+            'RemoteFile' => 'required|mimes:pdf|max:2048',
+        ]);
+
+        $request->file('RemoteFile')->storeAs('uploads', 'testfilename.pdf', 'public');
+    }
+    public function viewletter(Letter $letter)
+    {
+        $data['letter'] = $letter;
+        return view('backend.sticker.viewletter', $data);
+    }
+
     public function viewstickers(Letter $letter)
     {
         $data['stickers'] = $letter->stickers;
-        $data['stickers_count'] = count($letter->stickers);
+
+        $data['stickers_count'] = sprintf('%02d', count($letter->stickers) + 1);
         $data['letter'] = $letter;
-        $letterCount = Letter::get()->count() + 1;
-        $data['letterCode'] = sprintf('%02d', $letterCount);
+        $data['serialized'] = explode("-", $letter->stickers[0]->serialize);
         return view('backend.sticker.viewstickers', $data);
     }
-
     public function deleteletter(Letter $letter)
     {
         $deleted = $letter->delete();
@@ -64,12 +77,15 @@ class StickerController extends Controller
 
         $data['stickers'] = [];
         $data['letterNumber'] = '';
+
         if($request->session()->exists('stickers'))
         {
             $data['stickers'] = $request->session()->get('stickers');
             $data['stickerCount'] = sprintf('%02d', count($data['stickers']) + 1);
             $stickers = $request->session()->get('stickers');
-            $data['letterNumber'] = $stickers[0]['letter_number'];
+            if(count($stickers) > 0){
+                $data['letterNumber'] = $stickers[0]['letter_number'];
+            }
         }
 
         return view('backend.sticker.generate', $data);
@@ -86,6 +102,28 @@ class StickerController extends Controller
             $request->session()->push('stickers', $request->except('_token'));
         }
         return redirect('admin/sticker/generate')->withFlashSuccess('Sticker successfully added.');
+    }
+
+    public function addstickertoletter(Request $request)
+    {
+        $newSticker = new Sticker;
+        $newSticker->letter_id = $request->letter_id;
+        $newSticker->serialize = $request->serialize;
+        $newSticker->serial_number = $request->serialize_number;
+        $newSticker->sticker_type = $request->sticker_type;
+        $newSticker->unit_name = $request->unit_name;
+        $newSticker->military_number = $request->military_number;
+        $newSticker->rank = $request->rank;
+        $newSticker->person_name = $request->person_name;
+        $saved = $newSticker->save();
+        if($saved)
+        {
+            return redirect('admin/sticker/viewstickers/'.$request->letter_id)->withFlashSuccess('Sticker successfully added.');
+        }
+        else
+        {
+            return redirect('admin/sticker/viewstickers/'.$request->letter_id)->withFlashError('Sticker add failed.');
+        }
     }
 
     public function editsticker(Request $request)
@@ -126,6 +164,7 @@ class StickerController extends Controller
         $letter = new Letter();
         $letter->letter_number = $stickers[0]['letter_number'];
         $letter->letter_date = $stickers[0]['letter_date'];
+        $letter->file_name = $request->file_name;
         $letter->save();
         $letter_id = $letter->id;
 
@@ -145,4 +184,5 @@ class StickerController extends Controller
         $request->session()->forget('stickers');
         return redirect('admin/sticker')->withFlashSuccess('Sticker successfully saved.');
     }
+
 }

@@ -15,10 +15,10 @@
         <li class="c-sidebar-nav-item">
             <x-utils.link
                 class="c-sidebar-nav-link"
-                :href="route('admin.sticker.index')"
-                :active="activeClass(Route::is('admin.stickers.*'), 'c-active')"
+                :href="route('admin.ipsticker.index')"
+                :active="activeClass(Route::is('admin.ipsticker.*'), 'c-active')"
                 icon="c-sidebar-nav-icon cil-file"
-                :text="__('Stickers')" />
+                :text="__('IP Stickers')" />
         </li>
 
         @if (
